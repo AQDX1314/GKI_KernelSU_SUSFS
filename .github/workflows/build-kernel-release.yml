@@ -19,6 +19,7 @@ on:
         options:
           - ubuntu-22.04
           - ubuntu-22.04-local
+          - kernel-a13-5-15
         default: ubuntu-22.04
       lto_type:
         description: "Choose LTO type (full will not run on basic runners)"

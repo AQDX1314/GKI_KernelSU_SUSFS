@@ -129,17 +129,17 @@ jobs:
       REPO_OWNER: WildPlusKernel
       REPO_NAME: GKI_KernelSU_SUSFS
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      RELEASE_NAME: "*TEST BUILD* GKI Kernels With KernelSU ${{ inputs.kernelsu_variant }} & SUSFS v1.5.5 *TEST BUILD*"
+      RELEASE_NAME: "*TEST BUILD* GKI Kernels With KernelSU-${{ inputs.kernelsu_variant }} ${{ inputs.kernelsu_branch }} & SUSFS v1.5.5 *TEST BUILD*"
       RELEASE_NOTES: |
-        This release contains KernelSU ${{ inputs.kernelsu_variant }} and SUSFS v1.5.5
+        This release contains KernelSU-${{ inputs.kernelsu_variant }} ${{ inputs.kernelsu_branch }} and SUSFS v1.5.5
         
         Features:
-        [+] KernelSU-${{ inputs.kernelsu_variant }}
-        [+] SUSFS ඞ v1.5.5 
-        [+] Wireguard Support
-        [+] Simple Maphide for LineageOS Detections
-        [+] Futile Maphide for jit-zygote-cache Detections
-        [+] Magic Mount Support
+        -> KernelSU-${{ inputs.kernelsu_variant }}-${{ inputs.kernelsu_branch }}
+        -> SUSFS ඞ v1.5.5 
+        -> Wireguard Support
+        -> Simple Maphide for LineageOS Detections
+        -> Futile Maphide for jit-zygote-cache Detections
+        -> Magic Mount Support
 
         Module: 
         -> https://github.com/sidex15/ksu_module_susfs
@@ -150,7 +150,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Determine the branch for KernelSU-${{ inputs.kernelsu_variant }}
-        if: ${{ inputs.kernelsu_branch == 'Dev' }}
+        if: ${{ inputs.kernelsu_branch == 'Dev' || inputs.kernelsu_variant == 'MKSU' }}
         run: |
           # Determine the branch based on user input
           if [[ "${{ inputs.kernelsu_variant }}" == "Official" || "${{ inputs.kernelsu_variant }}" == "MKSU" ]]; then
@@ -285,7 +285,7 @@ jobs:
           echo "" >> $GITHUB_ENV
           echo "LTO: ${{ inputs.lto_type }}" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
-          echo "Commit Hashes & Links:" >> $GITHUB_ENV
+          echo "Commit Hashes and Links:" >> $GITHUB_ENV
           echo "KernelSU:" >> $GITHUB_ENV
           echo "${{ inputs.kernelsu_variant }}-${{ inputs.kernelsu_branch }}: [$KSU_REF]($KSU_URL)" >> $GITHUB_ENV
           echo "SUSFS4KSU:" >> $GITHUB_ENV
@@ -318,7 +318,7 @@ jobs:
 
             # Create the tag in the repository
             git tag $NEW_TAG
-            git push origin $NEW_TAG
+            git push --tags
             
       # Download Artifacts for A12 (Only if A12 Build is successful or input is true or empty)
       - name: Download Artifacts
@@ -364,4 +364,7 @@ jobs:
           curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
             -d "chat_id=$TELEGRAM_CHAT_ID" \
             -d "message_thread_id=$TELEGRAM_MESSAGE_THREAD_ID" \
-            -d "text=Latest release: https://github.com/WildPlusKernel/GKI_KernelSU_SUSFS/releases/tag/${{ env.NEW_TAG }}\n\n${{ env.RELEASE_NOTES }}"
+            -d "text=Latest release: 
+            https://github.com/WildPlusKernel/GKI_KernelSU_SUSFS/releases/tag/${{ env.NEW_TAG }}
+            
+            ${{ env.RELEASE_NOTES }}"
